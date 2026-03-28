@@ -1,16 +1,17 @@
 module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "6.6.0"
+  source = "../../modules/vpc"
 
-  name = "eks-vpc"
-  cidr = "10.0.0.0/16"
-
-  azs             = ["eu-west-3a", "eu-west-3b"]
-  private_subnets = ["10.0.1.0/24","10.0.2.0/24"]
-  public_subnets  = ["10.0.101.0/24","10.0.102.0/24"]
-
-  enable_nat_gateway = true
-  single_nat_gateway = true
+  name                = "eks-vpc"
+  cidr                = "10.0.0.0/16"
+  azs                 = ["eu-west-3a", "eu-west-3b"]
+  private_subnets     = ["10.0.1.0/24", "10.0.2.0/24"]
+  public_subnets      = ["10.0.101.0/24", "10.0.102.0/24"]
+  enable_nat_gateway  = true
+  single_nat_gateway  = true
+  tags = {
+    Environment = "dev"
+    Project     = "eks-production-project"
+  }
 }
 
 data "aws_caller_identity" "current" {}
@@ -26,18 +27,14 @@ module "eks" {
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
-  # Public endpoint (for learning project)
+  # Public endpoint (for dev env)
   cluster_endpoint_public_access  = true
   cluster_endpoint_private_access = false
 
-  # Enable IAM Roles for Service Accounts (VERY IMPORTANT)
-  // Enables IAM Roles for Service Accounts (IRSA), allowing Kubernetes service accounts
-  // to assume IAM roles with fine-grained permissions. This is the recommended approach
-  // for granting AWS permissions to pods running in EKS clusters.
-  // Supported in EKS v21 and later versions - not deprecated.
+  # Enable IAM Roles for Service Accounts (IRSA)
   enable_irsa = true
 
-  # Cluster logging (production-like)
+  # Cluster logging
   cluster_enabled_log_types = [
     "api",
     "audit",
@@ -74,6 +71,7 @@ module "eks" {
       subnet_ids = module.vpc.private_subnets
     }
   }
+
   # Access entries (modern replacement for aws-auth)
   access_entries = {
     cluster_admin = {
