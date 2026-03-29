@@ -17,24 +17,21 @@ module "vpc" {
 data "aws_caller_identity" "current" {}
 
 module "eks" {
-  source  = "terraform-aws-modules/eks/aws"
-  version = "21.0.3"
+  source = "../../modules/eks"
 
   cluster_name    = var.cluster_name
   cluster_version = "1.29"
 
-  # Networking
+  # Networking — wired from VPC module outputs
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
-  # Public endpoint (for dev env)
+  # Public endpoint is acceptable for dev
   cluster_endpoint_public_access  = true
   cluster_endpoint_private_access = false
 
-  # Enable IAM Roles for Service Accounts (IRSA)
   enable_irsa = true
 
-  # Cluster logging
   cluster_enabled_log_types = [
     "api",
     "audit",
@@ -43,51 +40,22 @@ module "eks" {
     "scheduler"
   ]
 
-  # EKS Addons
   cluster_addons = {
-    coredns = {
-      most_recent = true
-    }
-    kube-proxy = {
-      most_recent = true
-    }
-    vpc-cni = {
-      most_recent = true
-    }
+    coredns    = { most_recent = true }
+    kube-proxy = { most_recent = true }
+    vpc-cni    = { most_recent = true }
   }
 
-  # Managed Node Group
-  eks_managed_node_groups = {
-    dev_nodes = {
-      instance_types = ["t3.medium"]
-
-      min_size     = 1
-      max_size     = 2
-      desired_size = 2
-
-      capacity_type = "ON_DEMAND"
-
-      # Attach nodes to private subnets
-      subnet_ids = module.vpc.private_subnets
-    }
+  node_group = {
+    name           = "dev-nodes"
+    instance_types = ["t3.medium"]
+    min_size       = 1
+    max_size       = 2
+    desired_size   = 2
+    capacity_type  = "ON_DEMAND"
   }
 
-  # Access entries (modern replacement for aws-auth)
-  access_entries = {
-    cluster_admin = {
-      principal_arn = data.aws_caller_identity.current.arn
-
-      policy_associations = {
-        admin = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-
-          access_scope = {
-            type = "cluster"
-          }
-        }
-      }
-    }
-  }
+  admin_principal_arn = data.aws_caller_identity.current.arn
 
   tags = {
     Environment = "dev"
