@@ -112,3 +112,17 @@ variable "node_group" {
     capacity_type  = string
   })
 }
+
+# ── Add-ons ───────────────────────────────────────────────────────────────────
+
+variable "enable_metrics_server" {
+  description = "Install Metrics Server (required for HPA)"
+  type        = bool
+  default     = true
+}
+
+variable "metrics_server_chart_version" {
+  description = "Helm chart version for Metrics Server"
+  type        = string
+  default     = "3.12.1"
+}

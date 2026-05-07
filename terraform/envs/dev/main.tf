@@ -43,3 +43,21 @@ module "eks" {
 
   tags = local.common_tags
 }
+
+# ── Platform Add-ons ──────────────────────────────────────────────────────────
+# Requires the EKS cluster to exist first.
+# On first apply run: terraform apply -target=module.vpc -target=module.eks
+# Then run:           terraform apply
+
+module "addons" {
+  source = "../../modules/addons"
+
+  cluster_name              = var.cluster_name
+  cluster_oidc_provider_arn = module.eks.oidc_provider_arn
+  aws_region                = var.aws_region
+
+  enable_metrics_server        = var.enable_metrics_server
+  metrics_server_chart_version = var.metrics_server_chart_version
+
+  tags = local.common_tags
+}

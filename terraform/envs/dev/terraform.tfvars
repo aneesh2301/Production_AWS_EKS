@@ -27,3 +27,7 @@ node_group = {
   desired_size   = 2
   capacity_type  = "ON_DEMAND"
 }
+
+# ── Add-ons ───────────────────────────────────────────────────────────────────
+enable_metrics_server        = true
+metrics_server_chart_version = "3.12.1"
