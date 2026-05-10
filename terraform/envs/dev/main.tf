@@ -54,10 +54,15 @@ module "addons" {
 
   cluster_name              = var.cluster_name
   cluster_oidc_provider_arn = module.eks.oidc_provider_arn
+  vpc_id                    = module.vpc.vpc_id
   aws_region                = var.aws_region
+  aws_account_id            = data.aws_caller_identity.current.account_id
 
   enable_metrics_server        = var.enable_metrics_server
   metrics_server_chart_version = var.metrics_server_chart_version
+
+  enable_aws_load_balancer_controller        = var.enable_aws_load_balancer_controller
+  aws_load_balancer_controller_chart_version = var.aws_load_balancer_controller_chart_version
 
   tags = local.common_tags
 }

@@ -31,3 +31,7 @@ node_group = {
 # ── Add-ons ───────────────────────────────────────────────────────────────────
 enable_metrics_server        = true
 metrics_server_chart_version = "3.12.1"
+
+# ── AWS Load Balancer Controller ──────────────────────────────────────────────
+enable_aws_load_balancer_controller        = true
+aws_load_balancer_controller_chart_version = "1.8.1"

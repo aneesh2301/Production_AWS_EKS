@@ -126,3 +126,15 @@ variable "metrics_server_chart_version" {
   type        = string
   default     = "3.12.1"
 }
+
+variable "enable_aws_load_balancer_controller" {
+  description = "Install AWS Load Balancer Controller (required for ALB/NLB Ingress)"
+  type        = bool
+  default     = true
+}
+
+variable "aws_load_balancer_controller_chart_version" {
+  description = "Helm chart version for AWS Load Balancer Controller"
+  type        = string
+  default     = "1.8.1"
+}

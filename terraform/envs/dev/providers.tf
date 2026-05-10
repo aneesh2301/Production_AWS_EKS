@@ -14,6 +14,10 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 2.22"
     }
+    http = {
+      source  = "hashicorp/http"
+      version = "~> 3.4"
+    }
   }
 
   # Partial backend config — supply the rest via:
