@@ -29,63 +29,24 @@ resource "helm_release" "metrics_server" {
 # Manages ALB/NLB resources in AWS when Ingress or Service objects are created.
 # Requires IRSA — it calls AWS APIs to create/configure load balancers.
 
-# Fetch the official AWS-managed IAM policy document for the LBC
-data "aws_iam_policy_document" "aws_lbc" {
+module "aws_load_balancer_controller_irsa" {
   count = var.enable_aws_load_balancer_controller ? 1 : 0
 
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRoleWithWebIdentity"]
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "5.58.0"
 
-    principals {
-      type        = "Federated"
-      identifiers = [var.cluster_oidc_provider_arn]
-    }
+  role_name = "${var.cluster_name}-aws-lbc"
 
-    condition {
-      test     = "StringEquals"
-      variable = "${replace(var.cluster_oidc_provider_arn, "/^(.*provider/)/", "")}:sub"
-      values   = ["system:serviceaccount:kube-system:aws-load-balancer-controller"]
-    }
+  attach_load_balancer_controller_policy = true
 
-    condition {
-      test     = "StringEquals"
-      variable = "${replace(var.cluster_oidc_provider_arn, "/^(.*provider/)/", "")}:aud"
-      values   = ["sts.amazonaws.com"]
+  oidc_providers = {
+    main = {
+      provider_arn               = var.cluster_oidc_provider_arn
+      namespace_service_accounts = ["kube-system:aws-load-balancer-controller"]
     }
   }
-}
-
-resource "aws_iam_role" "aws_lbc" {
-  count = var.enable_aws_load_balancer_controller ? 1 : 0
-
-  name               = "${var.cluster_name}-aws-lbc"
-  assume_role_policy = data.aws_iam_policy_document.aws_lbc[0].json
 
   tags = var.tags
-}
-
-# Download the official AWS LBC IAM policy JSON directly from GitHub
-data "http" "aws_lbc_iam_policy" {
-  count = var.enable_aws_load_balancer_controller ? 1 : 0
-  url   = "https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.8.1/docs/install/iam_policy.json"
-}
-
-resource "aws_iam_policy" "aws_lbc" {
-  count = var.enable_aws_load_balancer_controller ? 1 : 0
-
-  name        = "${var.cluster_name}-aws-lbc-policy"
-  description = "IAM policy for AWS Load Balancer Controller"
-  policy      = data.http.aws_lbc_iam_policy[0].response_body
-
-  tags = var.tags
-}
-
-resource "aws_iam_role_policy_attachment" "aws_lbc" {
-  count = var.enable_aws_load_balancer_controller ? 1 : 0
-
-  role       = aws_iam_role.aws_lbc[0].name
-  policy_arn = aws_iam_policy.aws_lbc[0].arn
 }
 
 resource "helm_release" "aws_load_balancer_controller" {
@@ -105,7 +66,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   # Point to the IRSA role — controller will assume this to call AWS APIs
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = aws_iam_role.aws_lbc[0].arn
+    value = module.aws_load_balancer_controller_irsa[0].iam_role_arn
   }
 
   set {
@@ -124,5 +85,5 @@ resource "helm_release" "aws_load_balancer_controller" {
     value = "2"
   }
 
-  depends_on = [aws_iam_role_policy_attachment.aws_lbc]
+  depends_on = [module.aws_load_balancer_controller_irsa]
 }

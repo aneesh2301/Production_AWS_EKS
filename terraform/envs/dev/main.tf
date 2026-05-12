@@ -56,7 +56,6 @@ module "addons" {
   cluster_oidc_provider_arn = module.eks.oidc_provider_arn
   vpc_id                    = module.vpc.vpc_id
   aws_region                = var.aws_region
-  aws_account_id            = data.aws_caller_identity.current.account_id
 
   enable_metrics_server        = var.enable_metrics_server
   metrics_server_chart_version = var.metrics_server_chart_version

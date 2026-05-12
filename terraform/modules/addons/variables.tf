@@ -49,8 +49,3 @@ variable "aws_load_balancer_controller_chart_version" {
   type        = string
   default     = "1.8.1"
 }
-
-variable "aws_account_id" {
-  description = "AWS account ID — used to construct IRSA IAM role ARN"
-  type        = string
-}
