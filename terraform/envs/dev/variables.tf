@@ -138,3 +138,9 @@ variable "aws_load_balancer_controller_chart_version" {
   type        = string
   default     = "1.8.1"
 }
+
+variable "enable_aws_ebs_csi_driver" {
+  description = "Enable the EBS CSI driver managed add-on and create its IRSA role"
+  type        = bool
+  default     = true
+}

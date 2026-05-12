@@ -35,3 +35,6 @@ metrics_server_chart_version = "3.12.1"
 # ── AWS Load Balancer Controller ──────────────────────────────────────────────
 enable_aws_load_balancer_controller        = true
 aws_load_balancer_controller_chart_version = "1.8.1"
+
+# ── AWS EBS CSI Driver ───────────────────────────────────────────────────────
+enable_aws_ebs_csi_driver = true

@@ -4,6 +4,16 @@ locals {
     Project     = var.project
     ManagedBy   = "terraform"
   }
+
+  cluster_addons = merge(
+    var.cluster_addons,
+    var.enable_aws_ebs_csi_driver ? {
+      aws-ebs-csi-driver = {
+        most_recent              = true
+        service_account_role_arn = module.addons.aws_ebs_role_arn
+      }
+    } : {}
+  )
 }
 
 data "aws_caller_identity" "current" {}
@@ -36,7 +46,7 @@ module "eks" {
 
   enable_irsa               = var.enable_irsa
   cluster_enabled_log_types = var.cluster_enabled_log_types
-  cluster_addons            = var.cluster_addons
+  cluster_addons            = local.cluster_addons
   node_group                = var.node_group
 
   admin_principal_arn = data.aws_caller_identity.current.arn
@@ -62,6 +72,7 @@ module "addons" {
 
   enable_aws_load_balancer_controller        = var.enable_aws_load_balancer_controller
   aws_load_balancer_controller_chart_version = var.aws_load_balancer_controller_chart_version
+  enable_aws_ebs_csi_driver                  = var.enable_aws_ebs_csi_driver
 
   tags = local.common_tags
 }

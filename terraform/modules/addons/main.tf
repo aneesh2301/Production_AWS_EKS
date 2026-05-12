@@ -87,3 +87,26 @@ resource "helm_release" "aws_load_balancer_controller" {
 
   depends_on = [module.aws_load_balancer_controller_irsa]
 }
+
+# AWS EBS CSI Driver
+# Manages EBS volumes for Kubernetes — required for dynamic provisioning of EBS-backed PersistentVolumes.
+
+module "ebs_csi_irsa" {
+  count = var.enable_aws_ebs_csi_driver ? 1 : 0
+
+  source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "5.58.0"
+
+  role_name = "${var.cluster_name}-ebs-csi"
+
+  attach_ebs_csi_policy = true
+
+  oidc_providers = {
+    this = {
+      provider_arn               = var.cluster_oidc_provider_arn
+      namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
+    }
+  }
+
+  tags = var.tags
+}
