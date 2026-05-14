@@ -38,3 +38,7 @@ aws_load_balancer_controller_chart_version = "1.8.1"
 
 # ── AWS EBS CSI Driver ───────────────────────────────────────────────────────
 enable_aws_ebs_csi_driver = true
+
+# ── Cert-Manager ─────────────────────────────────────────────────────────────
+enable_cert_manager        = true
+cert_manager_chart_version = "v1.11.0"

@@ -73,6 +73,8 @@ module "addons" {
   enable_aws_load_balancer_controller        = var.enable_aws_load_balancer_controller
   aws_load_balancer_controller_chart_version = var.aws_load_balancer_controller_chart_version
   enable_aws_ebs_csi_driver                  = var.enable_aws_ebs_csi_driver
+  enable_cert_manager                        = var.enable_cert_manager
+  cert_manager_chart_version                 = var.cert_manager_chart_version
 
   tags = local.common_tags
 }

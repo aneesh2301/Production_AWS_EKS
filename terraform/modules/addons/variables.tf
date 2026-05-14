@@ -56,3 +56,16 @@ variable "enable_aws_ebs_csi_driver" {
   type        = bool
   default     = true
 }
+
+# ── Cert-Manager ─────────────────────────────────────────────────────────────
+variable "enable_cert_manager" {
+  description = "Install cert-manager for ACME HTTP-01 certificate issuance"
+  type        = bool
+  default     = true
+}
+
+variable "cert_manager_chart_version" {
+  description = "Helm chart version for cert-manager"
+  type        = string
+  default     = "v1.11.0"
+}

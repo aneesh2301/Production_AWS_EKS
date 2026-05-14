@@ -94,7 +94,7 @@ resource "helm_release" "aws_load_balancer_controller" {
 module "ebs_csi_irsa" {
   count = var.enable_aws_ebs_csi_driver ? 1 : 0
 
-  source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "5.58.0"
 
   role_name = "${var.cluster_name}-ebs-csi"
@@ -109,4 +109,23 @@ module "ebs_csi_irsa" {
   }
 
   tags = var.tags
+}
+
+# Cert-Manager deployement through Helm.
+
+resource "helm_release" "cert_manager" {
+  count = var.enable_cert_manager ? 1 : 0
+
+  name       = "cert-manager"
+  repository = "https://charts.jetstack.io"
+  chart      = "cert-manager"
+  namespace  = "cert-manager"
+  version    = var.cert_manager_chart_version
+
+  create_namespace = true
+
+  set {
+    name  = "installCRDs"
+    value = "true"
+  }
 }
