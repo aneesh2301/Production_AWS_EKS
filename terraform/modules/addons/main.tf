@@ -111,6 +111,58 @@ module "ebs_csi_irsa" {
   tags = var.tags
 }
 
+# ── External DNS ──────────────────────────────────────────────────────────────
+# Manages Route53 DNS records for Kubernetes Services and Ingresses.
+# Requires IRSA — it calls Route53 APIs to upsert and delete DNS records.
+
+module "external_dns_irsa" {
+  count = var.enable_external_dns ? 1 : 0
+
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "5.58.0"
+
+  role_name = "${var.cluster_name}-external-dns"
+
+  attach_external_dns_policy    = true
+  external_dns_hosted_zone_arns = var.external_dns_hosted_zone_arns
+
+  oidc_providers = {
+    main = {
+      provider_arn               = var.cluster_oidc_provider_arn
+      namespace_service_accounts = ["kube-system:external-dns"]
+    }
+  }
+
+  tags = var.tags
+}
+
+resource "helm_release" "external_dns" {
+  count = var.enable_external_dns ? 1 : 0
+
+  name       = "external-dns"
+  repository = "https://kubernetes-sigs.github.io/external-dns/"
+  chart      = "external-dns"
+  namespace  = "kube-system"
+  version    = var.external_dns_chart_version
+
+  values = [yamlencode({
+    provider      = "aws"
+    policy        = "upsert-only"
+    registry      = "txt"
+    txtOwnerId    = var.cluster_name
+    sources       = ["ingress", "service"]
+    domainFilters = var.external_dns_domain_filters
+    serviceAccount = {
+      create = true
+      annotations = {
+        "eks.amazonaws.com/role-arn" = module.external_dns_irsa[0].iam_role_arn
+      }
+    }
+  })]
+
+  depends_on = [module.external_dns_irsa]
+}
+
 # Cert-Manager deployement through Helm.
 
 resource "helm_release" "cert_manager" {

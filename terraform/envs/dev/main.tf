@@ -73,6 +73,10 @@ module "addons" {
   enable_aws_load_balancer_controller        = var.enable_aws_load_balancer_controller
   aws_load_balancer_controller_chart_version = var.aws_load_balancer_controller_chart_version
   enable_aws_ebs_csi_driver                  = var.enable_aws_ebs_csi_driver
+  enable_external_dns                        = var.enable_external_dns
+  external_dns_chart_version                 = var.external_dns_chart_version
+  external_dns_hosted_zone_arns              = var.external_dns_hosted_zone_arns
+  external_dns_domain_filters                = var.external_dns_domain_filters
   enable_cert_manager                        = var.enable_cert_manager
   cert_manager_chart_version                 = var.cert_manager_chart_version
 

@@ -12,3 +12,8 @@ output "aws_ebs_role_arn" {
   description = "IAM role ARN used by AWS EBS CSI Driver (via IRSA)"
   value       = var.enable_aws_ebs_csi_driver ? module.ebs_csi_irsa[0].iam_role_arn : null
 }
+
+output "external_dns_role_arn" {
+  description = "IAM role ARN used by ExternalDNS (via IRSA)"
+  value       = var.enable_external_dns ? module.external_dns_irsa[0].iam_role_arn : null
+}

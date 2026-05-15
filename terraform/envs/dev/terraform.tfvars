@@ -39,6 +39,12 @@ aws_load_balancer_controller_chart_version = "1.8.1"
 # ── AWS EBS CSI Driver ───────────────────────────────────────────────────────
 enable_aws_ebs_csi_driver = true
 
+# ── External DNS ─────────────────────────────────────────────────────────────
+enable_external_dns           = true
+external_dns_chart_version    = "1.14.5"
+external_dns_hosted_zone_arns = ["arn:aws:route53:::hostedzone/*"]
+external_dns_domain_filters   = []
+
 # ── Cert-Manager ─────────────────────────────────────────────────────────────
 enable_cert_manager        = true
 cert_manager_chart_version = "v1.11.0"

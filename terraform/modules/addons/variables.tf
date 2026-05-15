@@ -57,6 +57,31 @@ variable "enable_aws_ebs_csi_driver" {
   default     = true
 }
 
+# ── External DNS ─────────────────────────────────────────────────────────────
+variable "enable_external_dns" {
+  description = "Install ExternalDNS for Route53 record management"
+  type        = bool
+  default     = true
+}
+
+variable "external_dns_chart_version" {
+  description = "Helm chart version for ExternalDNS"
+  type        = string
+  default     = "1.14.5"
+}
+
+variable "external_dns_hosted_zone_arns" {
+  description = "Route53 hosted zone ARNs that ExternalDNS is allowed to manage"
+  type        = list(string)
+  default     = ["arn:aws:route53:::hostedzone/*"]
+}
+
+variable "external_dns_domain_filters" {
+  description = "Optional list of DNS suffixes ExternalDNS should manage"
+  type        = list(string)
+  default     = []
+}
+
 # ── Cert-Manager ─────────────────────────────────────────────────────────────
 variable "enable_cert_manager" {
   description = "Install cert-manager for ACME HTTP-01 certificate issuance"
