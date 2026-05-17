@@ -1,0 +1,17 @@
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: default
+spec:
+  amiFamily: AL2023
+  role: eks-dev-cluster-karpenter-node
+  subnetSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: eks-dev-cluster
+  securityGroupSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: eks-dev-cluster
+  tags:
+    Environment: dev
+    Project: eks-production-project
+    ManagedBy: terraform

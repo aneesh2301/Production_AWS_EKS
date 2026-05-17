@@ -26,6 +26,11 @@ provider "aws" {
   region = var.aws_region
 }
 
+provider "aws" {
+  alias  = "virginia"
+  region = "us-east-1"
+}
+
 # ── EKS auth data sources ─────────────────────────────────────────────────────
 # These require the cluster to already exist.
 # On first apply run: terraform apply -target=module.vpc -target=module.eks
@@ -37,6 +42,10 @@ data "aws_eks_cluster" "cluster" {
 
 data "aws_eks_cluster_auth" "cluster" {
   name = var.cluster_name
+}
+
+data "aws_ecrpublic_authorization_token" "karpenter" {
+  provider = aws.virginia
 }
 
 # ── Helm Provider ─────────────────────────────────────────────────────────────

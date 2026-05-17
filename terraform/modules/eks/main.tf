@@ -50,5 +50,7 @@ module "eks" {
     }
   }
 
+  node_security_group_tags = var.node_security_group_tags
+
   tags = var.tags
 }

@@ -39,6 +39,10 @@ aws_load_balancer_controller_chart_version = "1.8.1"
 # ── AWS EBS CSI Driver ───────────────────────────────────────────────────────
 enable_aws_ebs_csi_driver = true
 
+# ── Karpenter ────────────────────────────────────────────────────────────────
+enable_karpenter        = true
+karpenter_chart_version = "1.6.0"
+
 # ── External DNS ─────────────────────────────────────────────────────────────
 enable_external_dns           = true
 external_dns_chart_version    = "1.14.5"

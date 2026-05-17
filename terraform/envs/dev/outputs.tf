@@ -19,3 +19,13 @@ output "cluster_endpoint" {
 output "kubeconfig_certificate_authority_data" {
   value = module.eks.cluster_certificate_authority_data
 }
+
+output "karpenter_node_iam_role_name" {
+  description = "IAM role name referenced by the default Karpenter EC2NodeClass"
+  value       = var.enable_karpenter ? module.karpenter[0].node_iam_role_name : null
+}
+
+output "karpenter_queue_name" {
+  description = "SQS interruption queue used by Karpenter"
+  value       = var.enable_karpenter ? module.karpenter[0].queue_name : null
+}

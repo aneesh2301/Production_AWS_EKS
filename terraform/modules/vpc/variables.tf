@@ -28,6 +28,18 @@ variable "single_nat_gateway" {
   default = true
 }
 
+variable "private_subnet_tags" {
+  description = "Additional tags to apply to private subnets"
+  type        = map(string)
+  default     = {}
+}
+
+variable "public_subnet_tags" {
+  description = "Additional tags to apply to public subnets"
+  type        = map(string)
+  default     = {}
+}
+
 variable "tags" {
   type    = map(string)
   default = {}

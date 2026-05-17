@@ -69,6 +69,12 @@ variable "admin_principal_arn" {
   type        = string
 }
 
+variable "node_security_group_tags" {
+  description = "Additional tags to apply to the node security group"
+  type        = map(string)
+  default     = {}
+}
+
 variable "tags" {
   description = "Tags to apply to all resources"
   type        = map(string)

@@ -145,6 +145,18 @@ variable "enable_aws_ebs_csi_driver" {
   default     = true
 }
 
+variable "enable_karpenter" {
+  description = "Deploy Karpenter controller and supporting AWS resources"
+  type        = bool
+  default     = true
+}
+
+variable "karpenter_chart_version" {
+  description = "Helm chart version for Karpenter"
+  type        = string
+  default     = "1.6.0"
+}
+
 variable "enable_external_dns" {
   description = "Install ExternalDNS for Route53 record management"
   type        = bool
